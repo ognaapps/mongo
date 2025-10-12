@@ -1,0 +1,50 @@
+version: "3.9"
+
+services:
+  mongo:
+    image: mongo:7.0
+    container_name: mongo
+    restart: unless-stopped
+
+    # Only visible inside the same Docker network
+    expose:
+      - "27017"
+
+    # Persistent storage + initialization script
+    volumes:
+      - mongo_data:/data/db
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+
+    # Network for inter-service communication
+    networks:
+      - ogna
+
+    # Environment variables (loaded from .env)
+    env_file:
+      - .env
+
+    # Health check to ensure the DB is up before dependent containers start
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mongosh",
+          "--quiet",
+          "-u",
+          "${MONGO_INITDB_ROOT_USERNAME}",
+          "-p",
+          "${MONGO_INITDB_ROOT_PASSWORD}",
+          "--eval",
+          "db.adminCommand('ping')",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  mongo_data:
+    driver: local
+
+networks:
+  ogna:
+    external: true
