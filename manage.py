@@ -4,7 +4,7 @@ import sys
 import secrets
 import string
 
-PROJECT_NAME = "mongodb"
+PROJECT_NAME = "mongo"
 
 
 def generate_clear_password(length=100):
