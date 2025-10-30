@@ -14,7 +14,7 @@ services:
 
     # Network for inter-service communication
     networks:
-      - ogna
+      - databases
 
     # Environment variables (loaded from .env)
     env_file:
@@ -41,7 +41,11 @@ services:
 volumes:
   mongo_data:
     driver: local
+    driver_opts:
+      type: none
+      device: /mnt/volume-db/mongo
+      o: bind
 
 networks:
-  ogna:
+  databases:
     external: true
